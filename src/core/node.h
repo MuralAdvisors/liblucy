@@ -39,7 +39,7 @@
 #define MACHINE_USES_ASSIGN 1 << 2
 #define MACHINE_USES_DELAY 1 << 3
 #define MACHINE_USES_SERVICE 1 << 4
-#define MACHINE_USES_CONTEXT 1 << 4
+#define MACHINE_USES_CONTEXT 1 << 5
 
 typedef struct Node {
   unsigned short type;
