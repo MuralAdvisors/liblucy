@@ -5,6 +5,7 @@
 #include "action.h"
 #include "core.h"
 #include "guard.h"
+#include "context.h"
 #include "machine_state.h"
 #include "token.h"
 #include "use.h"
@@ -60,6 +61,10 @@ static int consume_machine_inner(State* state, bool is_implicit, int initial_tok
             _check(parser_consume_guard(state));
             break;
           }
+          case KW_CONTEXT: {
+            _check(parser_consume_context(state));
+            break;
+          }
         }
 
         break;
@@ -95,6 +100,7 @@ int parser_consume_machine(State* state) {
     err = 1;
     goto end;
   }
+  
   machine_node->name_start = state->word_start;
   machine_node->name_end = state->word_end;
 

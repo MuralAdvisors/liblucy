@@ -19,6 +19,7 @@
 
 #define ASSIGNMENT_ACTION 0
 #define ASSIGNMENT_GUARD 1
+#define ASSIGNMENT_CONTEXT 2
 
 #define EXPRESSION_ASSIGN 0
 #define EXPRESSION_IDENTIFIER 1
@@ -31,12 +32,14 @@
 #define EXPRESSION_SYMBOL 8
 #define EXPRESSION_INVOKE 9
 #define EXPRESSION_MEMBER 10
+#define EXPRESSION_CONTEXT 11
 
 #define MACHINE_USES_GUARD 1 << 0
 #define MACHINE_USES_ACTION 1 << 1
 #define MACHINE_USES_ASSIGN 1 << 2
 #define MACHINE_USES_DELAY 1 << 3
 #define MACHINE_USES_SERVICE 1 << 4
+#define MACHINE_USES_CONTEXT 1 << 4
 
 typedef struct Node {
   unsigned short type;
@@ -149,6 +152,13 @@ typedef struct GuardExpression {
   Expression* ref;
 } GuardExpression;
 
+typedef struct ContextExpression {
+  Expression expression;
+  char* key;
+  // mchar* keyValue;
+  Expression* value;
+} ContextExpression;
+
 typedef struct ActionExpression {
   Expression expression;
   Expression* ref;
@@ -211,6 +221,7 @@ AssignExpression* node_create_assignexpression();
 IdentifierExpression* node_create_identifierexpression();
 SymbolExpression* node_create_symbolexpression();
 GuardExpression* node_create_guardexpression();
+ContextExpression* node_create_contextexpression();
 ActionExpression* node_create_actionexpression();
 DelayExpression* node_create_delayexpression();
 OnExpression* node_create_onexpression();

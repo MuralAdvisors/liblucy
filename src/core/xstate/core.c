@@ -7,6 +7,8 @@
 #include "../set.h"
 #include "core.h"
 #include "machine.h"
+#include "../error.h"
+#include <stdio.h>
 
 typedef void (*set_ref)(PrintState*, Ref*);
 
@@ -49,6 +51,8 @@ static void add_ref(PrintState* state, char* key, Expression* value, Ref* head, 
   ref->value = node_clone_expression(value);
   ref->next = NULL;
 
+  fprintf(stderr,"New Ref = %s",ref->key);
+
   if(head == NULL) {
     setter(state, ref);
   } else {
@@ -73,8 +77,21 @@ static void set_guard_ref(PrintState* state, Ref* ref) {
   state->guard = ref;
 }
 
+static void set_context_ref(PrintState* state, Ref* ref) {
+  error_message("in set_context_ref.");
+  if (ref == NULL)
+    error_message("ref == null");
+  else
+    error_message("ref NOT null");
+  state->context = ref;
+}
+
 void xs_add_guard_ref(PrintState* state, char* key, Expression* value) {
   add_ref(state, key, value, state->guard, state->guard_names, *set_guard_ref);
+}
+
+void xs_add_context_ref(PrintState* state, char* key, Expression* value) {
+  add_ref(state, key, value, state->context, state->context_names, *set_context_ref);
 }
 
 static void set_delay_ref(PrintState* state, Ref* ref) {

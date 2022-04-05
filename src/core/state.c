@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "node.h"
 #include "state.h"
+#include "error.h"
 
 State* state_new_state(char* source, char* filename) {
   State *state = malloc(sizeof *state);
@@ -17,6 +18,8 @@ State* state_new_state(char* source, char* filename) {
   set_init(state->guards);
   state->actions = malloc(sizeof(SimpleSet));
   set_init(state->actions);
+  state->contexts = malloc(sizeof(SimpleSet));
+  set_init(state->contexts);
 
   state->node = NULL;
   state->parent_node = NULL;
@@ -142,10 +145,12 @@ void state_node_set(State* state, Node* node) {
 void state_node_up(State* state) {
   Node* current_parent = state->parent_node;
   if(current_parent != NULL) {
+    error_message("current parent is not null");
     Node* new_parent = current_parent->parent;
     state->node = current_parent;
     state->parent_node = new_parent;
   } else {
+       error_message("current parent IS null");
     state->node = NULL;
   }
 }
@@ -170,4 +175,13 @@ void state_add_action(State* state, char* name) {
 
 bool state_has_action(State* state, char* name) {
   return set_contains(state->actions, name) == SET_TRUE;
+}
+
+
+void state_add_context(State* state, char* name) {
+  set_add(state->contexts, name);
+}
+
+bool state_has_context(State* state, char* name) {
+  return set_contains(state->contexts, name) == SET_TRUE;
 }

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "node.h"
 #include "node/expression.h"
+#include "error.h"
 
 Node* node_create_type(unsigned short type, size_t size) {
   Node *node = malloc(size);
@@ -275,6 +276,18 @@ Expression* node_clone_expression(Expression* input) {
       output = (Expression*)out_id;
       break;
     }
+    case EXPRESSION_CONTEXT: {
+      error_message ("In Clone Expression for EXPRESSION_CONTEXT");
+      ContextExpression *in_ae = (ContextExpression*)input;
+      ContextExpression *out_ae = node_create_contextexpression();
+      if(in_ae->value != NULL) {
+        out_ae->value = node_clone_expression(in_ae->value);
+      }
+      out_ae->key = strdup(in_ae->key);
+     // out_ae->keyValue = strdup(in_ae->keyValue);
+      output = (Expression*)out_ae;
+      break;
+    }
     case EXPRESSION_ASSIGN: {
       AssignExpression *in_ae = (AssignExpression*)input;
       AssignExpression *out_ae = node_create_assignexpression();
@@ -367,15 +380,21 @@ void node_destroy_transition(TransitionNode* transition_node) {
 }
 
 void node_destroy_assignment(Assignment* assignment) {
+  error_message ("node_destroy_assignment start.");
   Expression *expression = assignment->value;
   if(assignment != NULL) {
     if(assignment->binding_name != NULL) {
+      error_message ("free assignment binding_name start.");
       free(assignment->binding_name);
+      error_message ("free assignment binding_name end.");
     }
     if(assignment->value != NULL) {
+      error_message ("destroy assignment value start.");
       node_destroy_expression(assignment->value);
+      error_message ("destroy assignment value end.");
     }
   }
+  error_message ("node_destroy_assignment end.");
 }
 
 void node_destroy_import(ImportNode* import_node) {

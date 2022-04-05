@@ -16,6 +16,7 @@
 #define KW_ON 11
 #define KW_SPAWN 12
 #define KW_SEND 13
+#define KW_CONTEXT 14
 
 bool is_keyword(char*);
 unsigned short keyword_get(char*);

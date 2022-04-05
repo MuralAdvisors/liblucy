@@ -23,6 +23,8 @@ typedef struct PrintState {
   int flags;
   char* source;
   Program* program;
+  Ref* context;
+  SimpleSet* context_names;
   Ref* guard;
   SimpleSet* guard_names;
   Ref* action;
@@ -47,5 +49,6 @@ void xs_add_send_call(JSBuilder*, SendExpression*);
 bool xs_find_and_add_top_level_machine_name(PrintState*, JSBuilder*, char*);
 void xs_add_action_ref(PrintState*, char*, Expression*);
 void xs_add_guard_ref(PrintState*, char*, Expression*);
+void xs_add_context_ref(PrintState*, char*, Expression*);
 void xs_add_delay_ref(PrintState*, char*, Expression*);
 void xs_add_service_ref(PrintState*, char*, Expression*);

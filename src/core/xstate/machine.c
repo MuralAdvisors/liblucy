@@ -7,6 +7,49 @@
 #include "../set.h"
 #include "core.h"
 #include "ts_printer.h"
+#include "../error.h"
+
+void add_context(PrintState* state, JSBuilder* jsb, MachineNode* node) {
+
+  bool has_context = state->context != NULL;
+
+  if(has_context) {
+
+    js_builder_start_prop(jsb, "context");
+    js_builder_start_object(jsb);
+
+    Ref* ref = state->context;
+
+   // js_builder_add_arg(jsb, "context: ");
+   // js_builder_add_str(jsb, ref->key);
+
+
+    fprintf(stderr, "Outside the loop.\n");
+
+    while(ref != NULL) {
+
+      fprintf(stderr, "Inside the loop, key=%s\n", ref->key);
+      js_builder_start_prop(jsb, ref->key);
+
+      Expression* expression = ref->value;
+
+      switch(expression->type) {
+        case EXPRESSION_CONTEXT: {
+          char* identifier = ((ContextExpression*)expression)->key;
+          js_builder_add_str(jsb, identifier);
+          break;
+        }
+        default: {
+          printf("Unexpected type of expression\n");
+        }
+      }
+
+      ref = ref->next;
+    }
+
+    js_builder_end_object(jsb);
+  }
+}
 
 static void add_machine_fn_args(PrintState* state, JSBuilder* jsb, MachineNode* machine_node) {
   js_builder_add_str(jsb, "{ ");
@@ -64,7 +107,10 @@ static inline void compile_machine(PrintState* state, JSBuilder* jsb, MachineNod
     js_builder_start_prop(jsb, "initial");
     js_builder_copy_string(jsb, state->source, machine_node->initial_start, machine_node->initial_end);
   }
-  js_builder_shorthand_prop(jsb, "context");
+  if (state->context == NULL)
+    js_builder_shorthand_prop(jsb, "context");
+  else
+    add_context(state, jsb, machine_node);
 }
 
 void xs_enter_machine(PrintState* state, JSBuilder* jsb, Node* node) {
@@ -270,5 +316,6 @@ void xs_exit_machine(PrintState* state, JSBuilder* jsb, Node* node) {
   set_clear(state->action_names);
   set_clear(state->delay_names);
   set_clear(state->service_names);
+  set_clear(state->context_names);
   xs_destroy_state_refs(state);
 }

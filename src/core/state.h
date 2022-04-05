@@ -26,6 +26,7 @@ typedef struct State {
 
   SimpleSet* guards;
   SimpleSet* actions;
+  SimpleSet* contexts;
 
   Program* program;
   Node* node;
@@ -57,5 +58,7 @@ void state_node_start_pos(State*, Node*, unsigned short);
 
 void state_add_guard(State*, char*);
 void state_add_action(State*, char*);
+void state_add_context(State*, char*);
 bool state_has_guard(State*, char*);
 bool state_has_action(State*, char*);
+bool state_has_context(State*, char*);
