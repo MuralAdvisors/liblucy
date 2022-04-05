@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../node.h"
+#include "../error.h"
 
 void node_destroy_expression(Expression*);
 
@@ -23,6 +24,15 @@ GuardExpression* node_create_guardexpression() {
   GuardExpression* expression = malloc(sizeof *expression);
   ((Expression*)expression)->type = EXPRESSION_GUARD;
   expression->ref = NULL;
+  return expression;
+}
+
+ContextExpression* node_create_contextexpression() {
+  ContextExpression* expression = malloc(sizeof *expression);
+  ((Expression*)expression)->type = EXPRESSION_CONTEXT;
+  expression->value = NULL;
+  expression->key = NULL;
+ // expression->keyValue = NULL;
   return expression;
 }
 
@@ -109,6 +119,21 @@ void node_destroy_guardexpression(GuardExpression* expression) {
   }
 }
 
+void node_destroy_contextexpression(ContextExpression* expression) {
+  if(expression != NULL) {
+    if(expression->value != NULL) {
+      node_destroy_expression(expression->value);
+    }
+    if(expression->key != NULL) {
+      error_message("About to free expression->key");
+      free(expression->key);
+    }
+   // if(expression->keyValue != NULL) {
+   //   free(expression->keyValue);
+   // }
+  }
+}
+
 void node_destroy_actionexpression(ActionExpression* expression) {
   if(expression != NULL) {
     node_destroy_expression(expression->ref);
@@ -157,6 +182,8 @@ void node_destroy_invokeexpression(InvokeExpression* expression) {
 }
 
 void node_destroy_expression(Expression* expression) {
+  error_message("At top of node_destroy_expression.");
+  printf("Expression Type: %d\n",expression->type);
   switch(expression->type) {
     case EXPRESSION_ASSIGN: {
       AssignExpression *assign_expression = (AssignExpression*)expression;
@@ -170,6 +197,11 @@ void node_destroy_expression(Expression* expression) {
     }
     case EXPRESSION_GUARD: {
       node_destroy_guardexpression((GuardExpression*)expression);
+      break;
+    }
+    case EXPRESSION_CONTEXT: {
+      error_message("Before node_destroy_contextexpression.\n");
+      node_destroy_contextexpression((ContextExpression*)expression);
       break;
     }
     case EXPRESSION_ACTION: {
